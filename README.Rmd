@@ -20,9 +20,7 @@ _Nicolás Schmidt, Diego Luján, Juan Andrés Moraes_
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version-ago/speechJava)](https://cran.r-project.org/package=speechJava)
 `r badger::badge_devel("Nicolas-Schmidt/speech", "orange")`
 [![Project Status: Abandoned – Initial development has started, but there has not yet been a stable, usable release; the project has been abandoned and the author(s) do not intend on continuing development.](https://www.repostatus.org/badges/latest/abandoned.svg)](https://www.repostatus.org/#abandoned)
-
-
-
+[![R-CMD-check](https://github.com/Nicolas-Schmidt/speechJava/workflows/R-CMD-check/badge.svg)](https://github.com/Nicolas-Schmidt/speechJava/actions)
 <!-- badges: end -->
 
 ### Description
