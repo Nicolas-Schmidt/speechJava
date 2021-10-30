@@ -1,0 +1,139 @@
+---
+output: github_document
+---
+
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "80%"
+)
+```
+
+## The `speechJava` package 
+
+_Nicolás Schmidt, Diego Luján, Juan Andrés Moraes_
+
+<!-- badges: start -->
+[![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version-ago/speechJava)](https://cran.r-project.org/package=speechJava)
+`r badger::badge_devel("Nicolas-Schmidt/speech", "orange")`
+[![Project Status: Abandoned – Initial development has started, but there has not yet been a stable, usable release; the project has been abandoned and the author(s) do not intend on continuing development.](https://www.repostatus.org/badges/latest/abandoned.svg)](https://www.repostatus.org/#abandoned)
+
+
+
+<!-- badges: end -->
+
+### Description
+
+Converts the floor speeches of Uruguayan legislators, extracted from the parliamentary minutes, to tidy data.frame where each observation is the intervention of a single legislator.
+
+### Installation
+
+```r
+remotes::install_github("Nicolas-Schmidt/speechJava")
+```
+
+
+### Data generation process
+
+
+#### 1 - Floor speeches
+
+<img src="man/figures/fspeech.png" style="margin-center:30px;margin-bottom:5px;" width="600" align="center"></a>
+
+
+#### 2 - Data extraction
+
+<img src="man/figures/fspeechextract.png" style="margin-center:30px;margin-bottom:5px;" width="600" align="center"></a>
+
+
+#### 3 - First construction of the database: `speechJava::speech_build()`
+
+<img src="man/figures/fspeechnocompiler.png" style="margin-center:30px;margin-bottom:5px;" width="900" align="center"></a>
+
+
+#### 4 - Final database: `speechJava::speech_build(., compiler = TRUE)`
+
+<img src="man/figures/fspeechcompiler.png" style="margin-center:30px;margin-bottom:5px;" width="900" align="center"></a>
+
+
+### Example
+
+You can see more complex examples in the following [link](https://github.com/Nicolas-Schmidt/speech-ejemplos).
+
+
+```{r example}
+library(speechJava)
+url <- "https://parlamento.gub.uy/documentosyleyes/documentos/diario-de-sesion/comisionpermanente/6084/IMG/0?width=800&height=600&hl=en_US1&iframe=true&rel=nofollow"
+text <- speechJava::speech_build(file = url)
+text
+
+
+speechJava::speech_check(text, initial = c("A", "M"))
+
+
+text <- speechJava::speech_build(file = url, compiler = TRUE)
+text
+
+
+text$word <- speechJava::speech_word_count(text$speech)
+
+dplyr::glimpse(text)
+
+```
+
+
+### Possible application
+```{r, out.width = "100%", warning=FALSE}
+library(magrittr)
+
+minchar <- function(string, min = 3){
+    string <- stringr::str_remove_all(string, "[[:punct:]]")
+    string <- unlist(strsplit(string, " "))
+    string[nchar(string) > min]
+}
+
+text$speech %>% 
+    minchar(., min = 4) %>%  
+    quanteda::corpus() %>% 
+    quanteda::dfm(remove = c("señor", "señora")) %>% 
+    quanteda.textplots::textplot_wordcloud(color = rev(RColorBrewer::brewer.pal(10, "RdBu")))
+
+```
+
+```{r}
+library(ggplot2)
+
+text$speech %>% 
+    minchar(., min = 4) %>%  
+    tibble::enframe() %>% 
+    tidytext::unnest_tokens(word, value) %>%
+    dplyr::count(word, sort = TRUE) %>%
+    dplyr::mutate(word = stats::reorder(word, n)) %>%
+    dplyr::filter(!stringr::str_detect(word, "^señor")) %>% 
+    .[1:40,] %>% 
+    ggplot(aes(word, n)) +
+        geom_col(col = "black", fill = "#00A08A", width = .7) +
+        labs(x = "", y = "") +
+        coord_flip() +
+        theme_minimal()
+```
+
+#### Citation
+
+To cite package`speechJava` in publications, please use:
+
+```{r, warning=FALSE}
+citation(package = 'speechJava')
+```
+
+#### Maintainer
+
+Nicolas Schmidt (<nschmidt@cienciassociales.edu.uy>)
+
+
+
+
+
